@@ -1,0 +1,241 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://assets/Textures/Purple/texture_09.png" type="Texture" id=1]
+[ext_resource path="res://assets/Materials/Dark Grid 1.tres" type="Material" id=2]
+
+[sub_resource type="ProceduralSky" id=7]
+sky_top_color = Color( 0, 0, 0, 1 )
+sky_horizon_color = Color( 0, 0, 0, 1 )
+ground_bottom_color = Color( 0, 0, 0, 1 )
+ground_horizon_color = Color( 0, 0, 0, 1 )
+sun_color = Color( 0, 0, 0, 1 )
+sun_latitude = 20.71
+sun_longitude = 125.71
+sun_angle_max = 25.71
+
+[sub_resource type="Environment" id=8]
+background_mode = 1
+background_sky = SubResource( 7 )
+ambient_light_color = Color( 0.0980392, 0.0980392, 0.0980392, 1 )
+ambient_light_energy = 6.32
+ambient_light_sky_contribution = 0.0
+fog_color = Color( 1, 0.839216, 0.956863, 1 )
+fog_depth_end = 1025.4
+tonemap_exposure = 1.34
+auto_exposure_enabled = true
+auto_exposure_min_luma = 0.64
+auto_exposure_speed = 2.0
+ssao_enabled = true
+ssao_quality = 2
+glow_enabled = true
+glow_intensity = 1.55
+glow_strength = 0.65
+glow_bloom = 0.55
+glow_blend_mode = 1
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="ConcavePolygonShape" id=3]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="SphereShape" id=10]
+
+[sub_resource type="SphereMesh" id=9]
+
+[sub_resource type="SpatialMaterial" id=11]
+flags_unshaded = true
+
+[sub_resource type="CubeMesh" id=12]
+
+[sub_resource type="SpatialMaterial" id=14]
+flags_world_triplanar = true
+albedo_texture = ExtResource( 1 )
+uv1_scale = Vector3( 0.1, 0.1, 0.1 )
+uv1_triplanar = true
+
+[sub_resource type="ConcavePolygonShape" id=15]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[node name="Map" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 8 )
+
+[node name="SunDirection" type="DirectionalLight" parent="."]
+transform = Transform( 0.392171, 0.68111, 0.618297, -0.676007, -0.242458, 0.695865, 0.623872, -0.690871, 0.36535, 0, 9.40605, 0 )
+light_energy = 0.661
+light_specular = 0.036
+shadow_enabled = true
+directional_shadow_split_1 = 0.7
+directional_shadow_blend_splits = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Floor" type="StaticBody" parent="."]
+transform = Transform( 150, 0, 0, 0, 1, 0, 0, 0, 150, 0, -1, 0 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Floor"]
+mesh = SubResource( 1 )
+skeleton = NodePath("../../..")
+material/0 = ExtResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape" type="CollisionShape" parent="Floor"]
+shape = SubResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Light" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.214497, 0.976725, 0, -0.976725, 0.214497, -1.36667, 20.371, 24.3625 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light2" type="StaticBody" parent="."]
+transform = Transform( 0.989234, 0.010285, -0.145983, 0.144356, -0.232468, 0.961832, -0.0240439, -0.97255, -0.23145, -46.1023, 20.371, -40.674 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light2"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light2"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light2"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light3" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.214497, 0.976725, 0, -0.976725, 0.214497, 98.7825, 20.371, -38.8936 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light3"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light3"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light3"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light4" type="StaticBody" parent="."]
+transform = Transform( 0.989234, 0.010285, -0.145983, 0.144356, -0.232468, 0.961832, -0.0240439, -0.97255, -0.23145, 54.0469, 20.371, -103.93 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light4"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light4"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light4"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light5" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.214497, 0.976725, 0, -0.976725, 0.214497, -78.3398, 20.371, 114.909 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light5"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light5"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light5"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light6" type="StaticBody" parent="."]
+transform = Transform( 0.989234, 0.010285, -0.145983, 0.144356, -0.232468, 0.961832, -0.0240439, -0.97255, -0.23145, -123.075, 20.371, 49.8722 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light6"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light6"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light6"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light7" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.214497, 0.976725, 0, -0.976725, 0.214497, -91.902, 20.371, -68.4255 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light7"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light7"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light7"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="Light8" type="StaticBody" parent="."]
+transform = Transform( 0.989234, 0.010285, -0.145983, 0.144356, -0.232468, 0.961832, -0.0240439, -0.97255, -0.23145, -136.638, 20.371, -133.462 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Light8"]
+shape = SubResource( 10 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Light8"]
+mesh = SubResource( 9 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 11 )
+
+[node name="SpotLight" type="SpotLight" parent="Light8"]
+light_energy = 4.886
+shadow_enabled = true
+spot_range = 4096.0
+spot_angle = 59.14
+
+[node name="PurpleCube" type="StaticBody" parent="."]
+transform = Transform( 13.0576, 0.126946, 0, -3.42755, 0.483616, 0, 0, 0, 19, -25.4773, 2.88542, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PurpleCube"]
+transform = Transform( 1, -1.86265e-09, 0, -1.90735e-06, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = SubResource( 12 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 14 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PurpleCube"]
+shape = SubResource( 15 )

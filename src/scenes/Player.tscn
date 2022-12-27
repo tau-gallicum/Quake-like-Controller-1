@@ -1,0 +1,236 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://src/scripts/hud.gd" type="Script" id=2]
+[ext_resource path="res://src/scripts/player.gd" type="Script" id=5]
+[ext_resource path="res://src/scripts/camera.gd" type="Script" id=6]
+[ext_resource path="res://assets/velocity_display_font.tres" type="DynamicFont" id=7]
+[ext_resource path="res://src/scripts/camera_holder.gd" type="Script" id=8]
+
+[sub_resource type="Shader" id=12]
+code = "shader_type canvas_item;
+
+uniform int levels = 3;
+uniform float spread = 0.01;
+
+vec3 chromatic_slice(float t){
+	vec3 res = vec3(1.0-t, 1.0 - abs(t - 1.0), t - 1.0);
+	return max(res, 0.0);
+}
+
+void fragment(){
+	vec3 sum;
+	COLOR.rgb = vec3(0);
+	vec2 offset = (UV - vec2(0.5))*vec2(1,-1);
+	for(int i = 0; i < levels; i++){
+		float t = 2.0*float(i)/float(levels-1); // range 0.0->2.0
+		vec3 slice = vec3(1.0-t, 1.0 - abs(t - 1.0), t - 1.0);
+		slice = max(slice, 0.0);
+		sum += slice;
+		vec2 slice_offset = (t-1.0)*spread*offset;
+		COLOR.rgb += slice * texture(SCREEN_TEXTURE, SCREEN_UV + slice_offset).rgb;
+	}
+	COLOR.rgb /= sum;
+}"
+
+[sub_resource type="ShaderMaterial" id=13]
+shader = SubResource( 12 )
+shader_param/levels = 3
+shader_param/spread = 0.01
+
+[sub_resource type="Animation" id=14]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("VelocityLabel:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 760, 908 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("VelocityLabel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=15]
+resource_name = "Start"
+length = 2.0
+step = 0.025
+tracks/0/type = "value"
+tracks/0/path = NodePath("VelocityLabel:rect_position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2 ),
+"transitions": PoolRealArray( 0.267943, 1 ),
+"update": 0,
+"values": [ Vector2( 760, 1000 ), Vector2( 760, 908 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("VelocityLabel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ true, false, true, false, true, false, true ]
+}
+
+[sub_resource type="CapsuleShape" id=1]
+height = 2.5
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 1, 0.698039, 0.992157, 1 )
+
+[sub_resource type="CapsuleMesh" id=2]
+material = SubResource( 3 )
+mid_height = 2.5
+
+[sub_resource type="Gradient" id=10]
+offsets = PoolRealArray( 0, 0.161943, 0.54251, 1 )
+colors = PoolColorArray( 0.0588235, 0.0588235, 0.0588235, 0, 0.94902, 0.94902, 0.894118, 0.94902, 0.94902, 0.94902, 0.894118, 0.94902, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=11]
+gradient = SubResource( 10 )
+
+[sub_resource type="Curve" id=5]
+_data = [ Vector2( 0, 0.480769 ), 0.0, -0.528846, 0, 0, Vector2( 0.295455, 0.211538 ), -1.07692, -1.07692, 0, 0, Vector2( 1, 0 ), -0.0357527, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=6]
+curve = SubResource( 5 )
+
+[sub_resource type="ParticlesMaterial" id=7]
+lifetime_randomness = 0.31
+gravity = Vector3( 0, 9.8, 0 )
+initial_velocity = 1.0
+initial_velocity_random = 0.75
+linear_accel = 0.5
+damping_random = 0.55
+scale_random = 1.0
+scale_curve = SubResource( 6 )
+color = Color( 1, 1, 1, 0.309804 )
+color_ramp = SubResource( 11 )
+
+[sub_resource type="SpatialMaterial" id=9]
+flags_transparent = true
+vertex_color_use_as_albedo = true
+albedo_color = Color( 1, 1, 1, 0.27451 )
+
+[sub_resource type="SphereMesh" id=8]
+material = SubResource( 9 )
+
+[node name="Player" type="KinematicBody"]
+pause_mode = 1
+collision_mask = 2
+script = ExtResource( 5 )
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="Crosshair" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+follow_viewport_scale = 0.1
+script = ExtResource( 2 )
+
+[node name="ChromaticOverlay" type="ColorRect" parent="HUD"]
+material = SubResource( 13 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="VelocityLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -200.0
+margin_top = -172.0
+margin_right = 200.0
+custom_colors/font_color = Color( 1, 1, 1, 0.662745 )
+custom_fonts/font = ExtResource( 7 )
+text = "00"
+align = 1
+valign = 2
+
+[node name="StartAnimationPlayer" type="AnimationPlayer" parent="HUD"]
+anims/RESET = SubResource( 14 )
+anims/Start = SubResource( 15 )
+
+[node name="CameraHolder" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.273, 0 )
+script = ExtResource( 8 )
+
+[node name="Camera" type="Camera" parent="CameraHolder"]
+cull_mask = 1048573
+current = true
+fov = 80.0
+far = 679.4
+script = ExtResource( 6 )
+
+[node name="FootstepPlayer" type="AudioStreamPlayer" parent="CameraHolder/Camera"]
+
+[node name="JumpPlayer" type="AudioStreamPlayer" parent="CameraHolder/Camera"]
+volume_db = 0.4
+
+[node name="LandPlayer" type="AudioStreamPlayer" parent="CameraHolder/Camera"]
+volume_db = 0.5
+
+[node name="DrawLocation" type="Spatial" parent="CameraHolder/Camera"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.612599, -2.56291, 0 )
+
+[node name="Timer" type="Timer" parent="CameraHolder"]
+one_shot = true
+
+[node name="Collider" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
+shape = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Pivot" type="Spatial" parent="."]
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Pivot"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
+layers = 2
+mesh = SubResource( 2 )
+skeleton = NodePath("../..")
+
+[node name="DustParticles" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0.358 )
+cast_shadow = 0
+emitting = false
+amount = 7
+lifetime = 0.95
+randomness = 1.0
+visibility_aabb = AABB( -5.39551, -0.98877, -5.396, 10, 10, 10 )
+local_coords = false
+process_material = SubResource( 7 )
+draw_pass_1 = SubResource( 8 )
+
+[node name="Ceiling" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.22407, 0 )
+enabled = true
+cast_to = Vector3( 0, 2, 0 )
+debug_shape_custom_color = Color( 0.945098, 0, 1, 1 )
+debug_shape_thickness = 5
